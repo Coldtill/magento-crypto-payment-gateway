@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Payment method facade -->
+    <virtualType name="ColdtillPaymentFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Coldtill\Payment\Model\Config::METHOD_CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Magento\Payment\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">ColdtillValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">ColdtillCommandPool</argument>
+            <argument name="validatorPool" xsi:type="object">ColdtillValidatorPool</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="ColdtillGatewayConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Coldtill\Payment\Model\Config::METHOD_CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="ColdtillConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">ColdtillGatewayConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="Coldtill\Payment\Gateway\Config\ActiveHandler">
+        <arguments>
+            <argument name="config" xsi:type="object">ColdtillGatewayConfig</argument>
+        </arguments>
+    </type>
+
+    <virtualType name="ColdtillValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">ColdtillConfigValueHandler</item>
+                <item name="active" xsi:type="string">Coldtill\Payment\Gateway\Config\ActiveHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="ColdtillCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="initialize" xsi:type="string">Coldtill\Payment\Gateway\Command\InitializeCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <virtualType name="ColdtillValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="currency" xsi:type="string">Coldtill\Payment\Gateway\Validator\CurrencyValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Dedicated log: var/log/coldtill.log -->
+    <virtualType name="ColdtillLogHandler" type="Magento\Framework\Logger\Handler\Base">
+        <arguments>
+            <argument name="fileName" xsi:type="string">/var/log/coldtill.log</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="ColdtillLogger" type="Magento\Framework\Logger\Monolog">
+        <arguments>
+            <argument name="name" xsi:type="string">coldtill</argument>
+            <argument name="handlers" xsi:type="array">
+                <item name="system" xsi:type="object">ColdtillLogHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="Coldtill\Payment\Model\PaymentStarter">
+        <arguments>
+            <argument name="logger" xsi:type="object">ColdtillLogger</argument>
+        </arguments>
+    </type>
+    <type name="Coldtill\Payment\Model\PaymentSync">
+        <arguments>
+            <argument name="logger" xsi:type="object">ColdtillLogger</argument>
+        </arguments>
+    </type>
+    <type name="Coldtill\Payment\Controller\Payment\Redirect">
+        <arguments>
+            <argument name="logger" xsi:type="object">ColdtillLogger</argument>
+        </arguments>
+    </type>
+    <type name="Coldtill\Payment\Controller\Payment\Back">
+        <arguments>
+            <argument name="logger" xsi:type="object">ColdtillLogger</argument>
+        </arguments>
+    </type>
+    <type name="Coldtill\Payment\Controller\Webhook\Index">
+        <arguments>
+            <argument name="logger" xsi:type="object">ColdtillLogger</argument>
+        </arguments>
+    </type>
+
+    <!-- Keep the secrets out of app/etc/config.php when the configuration is dumped. -->
+    <type name="Magento\Config\Model\Config\TypePool">
+        <arguments>
+            <argument name="sensitive" xsi:type="array">
+                <item name="payment/coldtill/api_key" xsi:type="string">1</item>
+                <item name="payment/coldtill/webhook_secret" xsi:type="string">1</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

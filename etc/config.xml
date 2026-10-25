@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <coldtill>
+                <active>0</active>
+                <model>ColdtillPaymentFacade</model>
+                <title>Pay with crypto</title>
+                <base_url/>
+                <!-- The backend_model attribute makes Magento decrypt these values when they are read. -->
+                <api_key backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <webhook_secret backend_model="Magento\Config\Model\Config\Backend\Encrypted"/>
+                <payment_action>authorize</payment_action>
+                <order_status>pending_payment</order_status>
+                <!-- Any value here tells Magento a redirect follows, so it holds the order email until payment. -->
+                <order_place_redirect_url>coldtill/payment/redirect</order_place_redirect_url>
+                <currency>USD</currency>
+                <is_gateway>1</is_gateway>
+                <can_initialize>1</can_initialize>
+                <can_use_checkout>1</can_use_checkout>
+                <can_use_internal>0</can_use_internal>
+                <can_authorize>0</can_authorize>
+                <can_capture>0</can_capture>
+                <can_refund>0</can_refund>
+                <can_void>0</can_void>
+                <can_cancel>0</can_cancel>
+                <sort_order>10</sort_order>
+            </coldtill>
+        </payment>
+    </default>
+</config>
